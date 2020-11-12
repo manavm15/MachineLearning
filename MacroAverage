@@ -1,0 +1,21 @@
+def macro_averaged(y_true, y_pred):
+    """Function which takes two lists and returns the macro averaged precision, recall, and f-score"""
+    #..........................................
+    P = []
+    R = []
+    # set of classes 
+    K = np.unique(y_true)
+    for k in K:
+        TP, FP, FN = class_scores(y_true, y_pred, k)
+        P.append(TP/(TP+FP))
+        R.append(TP/(TP+FN))
+    P_avg = np.mean(P)
+    R_avg = np.mean(R)
+    return (P_avg, R_avg, f_score(P_avg, R_avg))
+
+    
+
+print("""Macro averaged metrics:
+        \tPrecision: {:04.3f}
+        \tRecall: {:04.3f}
+        \tF-score: {:04.3f}""".format(*macro_averaged(true, pred)))
