@@ -1,0 +1,32 @@
+def precision(M):
+    """A function which takes a 2x2 confusion matrix and returns the precision"""
+    #...........................................
+    TP=M[1,1]
+    FP=M[0,1]
+    return TP/(TP+FP)
+
+
+    
+def recall(M):
+    """A function which takes a 2x2 confusion matrix and returns the recall"""
+    #...............................................
+    TP=M[1,1]
+    FN=M[1,0]
+    return TP/(TP+FN)
+    
+print(round(precision(M),2))
+print(round(recall(M), 3))
+#.................................................f-score and f-beta score...............................................#
+def f_beta_score(precision, recall, beta=1):
+    """A function which takes the precision and recall of some model, and a value for beta,and returns the f_beta-score"""
+    return (1+beta**2)*precision*recall/(beta**2*precision+recall)
+    #.......................................................................
+def f_score(precision, recall):
+    return f_beta_score(precision, recall, beta=1)
+
+print(f_score(precision(M), recall(M)))
+
+
+
+
+
