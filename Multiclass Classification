@@ -1,0 +1,25 @@
+### Rather than just having two classes Spam (1) and Non-Spam (0), we now have a third class,e.g. Phishing emails (2).
+true = [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0,
+         2, 1, 1, 2, 2, 0, 0, 1, 0, 1, 1, 0, 0, 2, 1, 0, 1,
+         0, 0, 2, 0, 1, 0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 0, 2,
+         0, 0, 2, 0, 1, 0, 0, 0, 1, 1, 1, 1, 2, 0, 0, 0, 0,
+         1, 0, 2, 0, 0, 0, 1, 2, 2, 1, 1, 0, 1, 1, 2, 1, 0,
+         0, 0, 0, 0, 0, 2, 0, 1, 0, 2, 1, 1, 1, 1, 1]
+
+pred = [0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 1, 2, 0, 0, 0, 0, 1,
+             2, 1, 1, 2, 0, 1, 2, 1, 0, 1, 1, 0, 0, 2, 1, 0, 0,
+             0, 1, 2, 0, 1, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 2,
+             0, 2, 2, 0, 1, 0, 0, 0, 1, 1, 1, 1, 2, 0, 0, 0, 0,
+             1, 0, 2, 0, 0, 0, 1, 2, 2, 1, 1, 2, 1, 1, 1, 1, 1,
+             0, 0, 0, 0, 0, 2, 0, 1, 1, 2, 1, 0, 1, 1, 2]
+import numpy as np
+def multiclass_confusion_matrix(y_true, y_pred):
+    """A function which takes two lists and returns a confusion matrix"""
+    #.....................................................
+    N=len(np.unique(y_true))
+    M=np.zeros((N,N))
+    for true, pred in zip(y_true,y_pred):
+        M[true,pred]+=1
+    return M
+
+print(multiclass_confusion_matrix(true, pred))
