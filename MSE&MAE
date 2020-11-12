@@ -1,0 +1,15 @@
+# In this file we will see the implementation of MAE and MSE in python without using Numpy.
+def mae(y_true,y_pred):
+    diff=0
+    for i in range(len(y_true)):
+        diff+=abs(y_true[i]-y_pred[i])
+    avg=diff/(len(y_true))
+    return(avg)
+def mse(y_true,y_pred):
+    sq_sum=0
+    for i in range(len(y_true)):
+        sq_sum+=(y_true[i]-y_pred[i])**2
+    avg=sq_sum/(len(y_true))
+    return(avg)
+mae([5.5,6.2,9.4],[5.8,6.2,9.8])#The data is an assumption
+mse([5.5,6.2,9.4],[5.8,6.2,9.8])#The data is an assumption
