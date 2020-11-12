@@ -1,0 +1,20 @@
+# Binary classification is applicable when there are only two possible answers (e.g., yes/no, good/bad, positive/negative, etc.).
+# In this notebook we will use 0 (not-spam/ham) and 1 (spam) as the possible outcomes.
+# Below we have for 100 emails with information about whether they are really spam, and whether they were flagged as spam.
+# We will try to calculate accuracy, to do so we need to know that "accuracy=Number_of_correct_spam_flags/Length_of_Spam_Or_NotSpam"
+spam = [0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 
+           0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+           0, 1, 1, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 
+           0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0]
+
+flagged = [1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+               0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0,
+               0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0]
+def accuracy(spam,flagged):
+    ctr=0
+    for i in range(len(flagged)):
+        if flagged[i]==spam[i]:
+            ctr+=1
+    return ctr/len(flagged)
+accuracy(spam,flagged)
