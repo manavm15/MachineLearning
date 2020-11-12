@@ -1,0 +1,43 @@
+#Create a confusion matrix and create its accuracy
+## To check if our accuracy is correct, we can check it with the accuracy method we defined earlier. 
+## If the accuracies are same then Congrats! You are on the right track!:)
+## To make the life a little easy, I will redefine the accuracy code block here and check with our confusion_accuracy
+spam = [0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 
+           0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+           0, 1, 1, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 
+           0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0]
+
+flagged = [1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+               0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0,
+               0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0]
+def accuracy(spam,flagged):
+    ctr=0
+    for i in range(len(flagged)):
+        if spam[i]==flagged[i]:
+            ctr+=1
+    return ctr/len(flagged)
+import numpy as np
+#-------------------------------------------CONFUSION MATRIX & CONFUSION ACCURACY---------------------------------------------------------#
+def confusion_matrix(y_true, y_pred):
+    M=np.array([[0,0],[0,0]])
+    for true, pred in zip(y_true,y_pred):
+            M[true,pred]+=1
+    return M
+    """A function which takes two lists and returns a confusion matrix with the cells (TN, TP, FP, FN)"""
+  
+    
+def confusion_accuracy(M):
+    TN=M[0,0]
+    FP=M[0,1]
+    FN=M[1,0]
+    TP=M[1,1]
+    return (TP+TN)/np.sum(M)
+    """A function which takes the confusion matrix with 4 cells (TN, TP, FP, FN) and returns the accuracy"""   
+M = confusion_matrix(spam, flagged)
+print(confusion_accuracy(M))
+
+if confusion_accuracy(M)!=accuracy(spam,flagged):
+    print("There is something wrong with your CONFUSION MATRIX or CONFUSION ACCURACY code, check it again")
+else:
+    print("Accuracy matched!")
