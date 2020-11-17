@@ -1,0 +1,10 @@
+def pretty(node, depth=1):
+        if isLeaf(node):
+            return "Predict: \"{:s}\"".format(node['predict'])
+        else:
+            s = "if features[{:d}] != \"{:s}\" then:\n {:s} \n{:s}else:\n {:s}"
+            return s.format(node['feature'], 
+                            node['value'], 
+                            "\t" * depth + pretty(node['left'], depth+1),
+                            "\t" * (depth-1),
+                            "\t" * depth + pretty(node['right'], depth+1))
