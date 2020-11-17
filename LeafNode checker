@@ -1,0 +1,9 @@
+# Additionally we can use `isleaf` to check if a node is a leaf node or not.
+print("Is root a leaf node?", isLeaf(root))
+
+print("Is the right child of root a leaf node?", isLeaf(root['right']))
+print()
+
+# If we want to find out which column the root looks at we can:
+print("The root looks at column", root['feature'], 
+      "and checks if its value is equal or not to", root['value'])
