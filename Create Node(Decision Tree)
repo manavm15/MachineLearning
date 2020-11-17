@@ -1,0 +1,7 @@
+def Node(left=None, right=None, feature=None, value=None, predict=None):
+    "Return a node in a binary decision tree"
+    return dict(left=left, right=right, feature=feature, value=value, predict=predict)
+## Below is the helper function, it will just help you to check if the node function is working properly or not
+def isLeaf(node):
+        
+        return node['left'] is None and node['right'] is None
