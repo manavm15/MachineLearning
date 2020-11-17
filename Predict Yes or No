@@ -1,0 +1,165 @@
+## A sample data to train your program on.
+#It has the following features, all of which are categorical.
+
+#outlook {sunny, overcast, rainy}
+#temperature {hot, mild, cool}
+#humidity {high, normal}
+#windy {TRUE, FALSE}
+#And the target is:
+#Can we play outside today? {yes, no}
+#The features are stored in X_train, each row in X_train is a different day/moment. y_train contains the label for each row.
+
+X_train = [['sunny', 'hot', 'high', 'FALSE'],
+ ['sunny', 'hot', 'high', 'TRUE'],
+ ['overcast', 'hot', 'high', 'FALSE'],
+ ['rainy', 'mild', 'high', 'FALSE'],
+ ['rainy', 'cool', 'normal', 'FALSE'],
+ ['rainy', 'cool', 'normal', 'TRUE'],
+ ['overcast', 'cool', 'normal', 'TRUE'],
+ ['sunny', 'mild', 'high', 'FALSE'],
+ ['sunny', 'cool', 'normal', 'FALSE'],
+ ['rainy', 'mild', 'normal', 'FALSE'],
+ ['sunny', 'mild', 'normal', 'TRUE'],
+ ['overcast', 'mild', 'high', 'TRUE'],
+ ['overcast', 'hot', 'normal', 'FALSE'],
+ ['rainy', 'mild', 'high', 'TRUE']]
+
+y_train = ['yes', 'no', 'yes', 'no', 'yes', 'no', 'yes', 'no', 'yes', 'yes', 'yes', 'yes', 'yes', 'no']
+
+# This program finds out the most occured event.
+
+def majority(a):
+    #..........................
+    yesctr=0
+    noctr=0
+    for i in range(len(a)):
+        if a[i]=='yes':
+            yesctr+=1
+        else:
+            noctr+=1
+    if yesctr>noctr:
+        return 'yes'
+    else:
+        return 'no'
+
+
+if majority(y_train) == 'yes' and majority(y_train[:3]) == 'no':
+    print("Majority is correct!")
+else:
+    print("Your majority function contains a mistake")
+ # We define the question set to ask the questions 
+   def question_set(X):
+    #................................
+    x=[]
+    for i in X[0]:
+        x.append([])
+    for r in X:
+        for i,col in enumerate(r):
+            x[i].append(col)
+    return[set(r) for r in x]
+question_set(X_train)
+
+# We need to split the dataset according to the question set generated.
+
+def split(feature, value, X, y):
+    #................................
+    X_right=[]
+    Y_right=[]
+    X_left=[]
+    Y_left=[]
+    flag=-1
+    for row in X:
+        flag+=1
+        if row[feature]==value:
+            X_right.append(row)
+            X_left.append(y[flag])
+        else:
+            Y_right.append(row)
+            Y_left.append(y[flag])
+            
+    return (Y_right,Y_left,X_right,X_left)
+
+
+
+split(0, 'overcast', X_train, y_train)
+
+# This function finds out the uncertainity.
+
+from math import log2
+
+def entropy(labels):
+    #.....................................
+    counts = {}
+    for label in labels:
+        counts[label] = counts.get(label,0) + 1/len(labels)   
+    #print(counts.values())
+    return -sum([p*log2(p) for p in counts.values()])
+    # or the general way
+    # lis=[]
+    # for p in counts.values():
+        #lis.append(p*math.log2(p))
+    #return(-sum(lis))
+
+if not (entropy([0,1]) == 1.0 and
+        entropy([-1,1,2,3]) == 2.0 and
+        entropy(y_train[:10]) > entropy(y_train)):
+    print("Your entropy function contains a mistake!")
+
+# This function finds out the Information Gained by the Machine. We need to know how much the entropy goes down if we make a certain decision. 
+# It is done by Information Gain
+    
+    def IG(left, right):
+    #..........................................
+    parent = left+right
+    w_left=len(left)/len(parent)
+    w_right=len(right)/len(parent)
+    return entropy(parent)-w_left*entropy(left)-w_right*entropy(right)
+
+
+L, yL, R, yR = split(0, 'overcast', X_train, y_train)
+print(IG(yL,yR))
+
+L, yL, R, yR = split(0, 'sunny', X_train, y_train)
+print(IG(yL,yR))
+
+# This code fits the Xtrain and Ytrain by taking Entropy and calculating the best Information Gain from Information Gain 
+# and then print the decision tree in readable format.
+def fit(X, y):
+    #........................................
+    if entropy(y) == 0:
+        return Node(predict=majority(y))
+    else:
+        qs = question_set(X)
+        scores = []
+        for feature, row in enumerate(qs):
+            for value in row:
+                _, yleft, _, yright = split(feature, value, X, y)
+                scores.append((IG(yleft,yright), feature, value))
+               
+        bestIG, feature, value = sorted(scores, key=lambda x: x[0])[-1]
+       
+        Xleft, yleft, Xright, yright = split(feature, value, X, y)
+            
+        left = fit(Xleft, yleft)
+        right = fit(Xright, yright)
+        return Node(feature=feature, value=value, left=left, right=right)
+    
+decision_tree = fit(X_train, y_train)
+print(pretty(decision_tree))
+
+# This code predicts the outcome Yes or No
+def predict(tree, x):
+    #............................................
+    if isLeaf(tree):
+        return tree['predict']
+    elif x[tree['feature']] != tree['value']:
+        return predict(tree['left'], x)
+    else:
+        return predict(tree['right'], x)
+
+    
+
+# This code applies the predict function to 
+print('\t\tData\t\t\tTruth\tPrediction')
+for row, label in zip(X_train, y_train):
+    print(row, '\t', label, '\t', predict(decision_tree, row))
