@@ -1,0 +1,183 @@
+# Accept a list of numeric ratings, and return a list of class labels -1 and 1.
+def binarize(y):
+    threshold=5
+    retlist=[]
+    for i in y:
+        if i>threshold:
+            retlist.append(1)
+        else:
+            retlist.append(-1)
+    return retlist
+#y = list(range(0,19))
+print(binarize(y))
+
+# Extract the target label and feature values of a training example from a string.
+def parse_line(line):
+    mapping_features_dict={}
+    field=line.split(" ")
+    target_label=int(field[0])
+    for i in range(1,len(field)):
+        f=(field[i].strip("\n").split(":"))
+        key=int(f[0])
+        val=float(f[1])
+        mapping_features_dict[key]=val
+    return(mapping_features_dict,target_label)
+#line = '1 0:2.0 3:4.0 123:1.0\n'
+print(parse_line(line))
+
+# Reading the data upload the file Sentiment.feat as we will be performing the perceptron on this data.
+import random
+random.seed(123)
+def prepare_data():
+    """Read data from input file, shuffle and return a list of training examples."""
+    # Sample 10% of data so we don't crash the server
+    train = []
+    for line in open('sentiment.feat'):
+        if random.random() >= 0.9:
+            train.append(parse_line(line))
+    
+    # We will shuffle the examples so that we have a mixture of positive and negative cases
+    random.shuffle(train)
+    # We unzip the data into input features and target labels
+    X, Z = list(zip(*train))
+    # We binarize the labels
+    Y = binarize(Z)
+    return list(zip(X,Y))
+ # We now need to implement the vector operations needed for the Perceptron algorithm for the dictionary representation.
+ 
+ def dot(big, small):
+    sums=0.0
+    for i,j in small.items():
+            sums+=j*big.get(i,0)
+    return sums
+u = {0:0.5, 1:2.0, 2:-2.5}
+v = {0:-0.5, 2:2.5, 3:0.5}
+print(dot(u, v))
+
+# Modify u so that it contains the union of the keys present in the two vectors. This is acheived by using increment function. 
+# Note this function does not return something.
+
+def increment(big, small):
+    #
+    for keys, values in small.items():
+        big[keys]=big.get(keys,0.0)+values
+        
+u = {0:0.5, 1:2.0, 2:-2.5}
+v = {0:-0.5, 2:2.5, 3:0.5}
+increment(u, v)
+print(u) 
+u = {0:0.5, 1:2.0, 2:-2.5}
+w = {}
+increment(u, w)
+print(u)
+
+# Function scale takes a vector u (as a dictionary) and a number n, and returns a new vector dictionary which contains 
+# the values in vector u multiplied by n. This function does not modify its arguments, but only returns a new dictionary.
+
+def scale(u, n):
+    ret_dict={}
+    for keys in u.keys():
+        ret_dict[keys]=u[keys]*n
+    return ret_dict
+u = {0:0.5, 1:2.0, 2:-2.5}
+v = {0:-0.5, 2:2.5, 3:0.5}
+n = 2.0
+print(scale(u, n))
+print(u) # u should be unchanged
+u = {0:0.5, 1:2.0, 2:-2.5}
+v = {0:-0.5, 2:2.5, 3:0.5}
+increment(u, scale(v, -1.0))
+print(u)
+
+#---------------------Perceptron------------------------#
+
+# We will now start implementing the Perceptron algorithm.
+
+def initialize():
+    w = {}
+    b = 0.0
+    return {'w':w,'b':b}
+
+model = initialize()
+
+def predict(model, x):
+    if dot(model["w"],x)+model['b']>=0:
+        return 1 
+    else:
+        return -1
+
+x = u = {0:0.5, 1:2.0, 2:-2.5}
+model = initialize()
+print(predict(model, x))
+
+def update(model, xy):
+    #
+    x,y=xy
+    y_pred=predict(model,x)
+    if y==1 and y_pred==-1:
+        increment(model['w'],x)
+        model['b']+=1
+    elif y==-1 and y_pred==1:
+        increment(model['w'],scale(x,-1))
+        model['b']-=1
+    return y_pred   
+
+x = { 0: 7.0, 1: 4.0, 3: 4.0, 4: 2.0, 5: 2.0, 11: 3.0 }
+y = -1
+model = initialize()
+y_pred = update(model, (x,y))
+print(y_pred)
+print(model)
+
+def learn(model, XY):
+    guess_list=[]
+    for i in range(0,len(XY)):
+        X,Y=XY[i]
+        guess=update(model,(X,Y))
+        guess_list.append(guess)
+    return guess_list
+import numpy as np
+def evaluate(gold, predicted):
+    error=0
+    total_labels=len(predicted)
+    for i in range(len(predicted)):
+        if gold[i]!=predicted[i]:
+            error+=1
+    error_rate=error/total_labels
+    return error,total_labels,error_rate
+###-------------------ANOTHER WAY OF DOING THE SAME PROBELM------------------------------###
+    """
+    true=np.array(gold)
+    true_labels=len(true)
+    predicted=np.array(predicted)
+    error=np.sum(true!=predicted)
+    return error, true_labels,error/true_labels
+    """
+###-------------------------------------------------------------------------------------###
+y_true = [-1,-1,1,1,1]
+y_pred = [-1,1,1,1,-1]
+print(evaluate(y_true, y_pred))
+print(evaluate(y_true, y_true))
+
+XY_train = XY[:2000]
+Y_true = [ xy[1] for xy in XY_train ]
+model = initialize()
+Y_pred = learn(model, XY_train)
+
+# Run the model over the data a few times and monitor the performance on the second part of the data.
+
+def run(XY, passes=1):
+    XY_train = XY[:2000]
+    XY_dev   = XY[2000:]
+    Y_train = [ xy[1] for xy in XY_train ]
+    Y_dev   = [ xy[1] for xy in XY_dev ]
+    model = initialize()
+    print("{:>3s} {:>7s} {:>7s}".format("Pass", "err_tr", "err_dev"))
+    for i in range(1, passes+1):
+        predicted_train = learn(model, XY_train)
+        _, _, rate_train = evaluate(Y_train, predicted_train)
+        predicted_dev = [ predict(model, x) for (x,_) in XY_dev ]
+        _, _, rate_dev = evaluate(Y_dev, predicted_dev)
+        print("{:3d} {:7.3f} {:7.3f}".format(i, rate_train, rate_dev))
+        
+run(XY, passes=5)        
