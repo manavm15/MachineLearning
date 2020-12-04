@@ -12,7 +12,7 @@ scaler.fit(X_train)
 X_train_z = scaler.transform(X_train) ## fit the X_train and transform to z value as SGD is very sensitive to LR and 
 X_val_z = scaler.transform(X_val) ## scale features.
 
-## Create learning rate from 10 raised to the power of -6 to 1
+## Create learning rate from 10^-6 to 10^0 (the value 1 is not included in range, as range is till n-1)
 
 learning_rate = []
 for x in range(-6,1):
