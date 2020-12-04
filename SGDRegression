@@ -1,8 +1,12 @@
 from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
-
+from sklearn.linear_model import SGDRegressor
+from sklearn.preprocessing import StandardScaler
 # ..........................................
+songs = numpy.load("songs50k.npy")
+X_train, X_val, y_train, y_val = train_test_split(songs[:,1:], songs[:,0], test_size=1/3, random_state=666)
+
 scaler = StandardScaler()
 scaler.fit(X_train)
 X_train_z = scaler.transform(X_train) ## fit the X_train and transform to z value as SGD is very sensitive to LR and 
