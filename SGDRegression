@@ -37,7 +37,6 @@ for lr_schedule in ["constant", "optimal", "invscaling"]:
         print(settings[-1]) ## Print the latest added value
 
 # Calculate best MAE and R^2
-
 best_mae = min(settings, key = lambda x : x[-2])
 best_r2 = max(settings, key = lambda x : x[-1])
 
